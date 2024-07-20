@@ -72,7 +72,8 @@ from robot.output import librarylogger
 from robot.running.context import EXECUTION_CONTEXTS
 
 
-LOGLEVEL = Literal['TRACE', 'DEBUG', 'INFO', 'CONSOLE', 'HTML', 'WARN', 'ERROR']
+LOGLEVEL = Literal['TRACE', 'DEBUG', 'INFO',
+                   'CONSOLE', 'HTML', 'WARN', 'ERROR']
 
 
 def write(msg: str, level: LOGLEVEL = 'INFO', html: bool = False):
@@ -89,6 +90,8 @@ def write(msg: str, level: LOGLEVEL = 'INFO', html: bool = False):
     specific methods such as ``info`` and ``debug`` that have separate
     ``html`` argument to control the message format.
     """
+    if (len(msg) == 0):
+        return
     if EXECUTION_CONTEXTS.current is not None:
         librarylogger.write(msg, level, html)
     else:
