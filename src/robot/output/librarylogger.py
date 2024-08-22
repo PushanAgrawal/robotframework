@@ -35,9 +35,12 @@ def write(msg: 'str | Callable[[], str]', level: str, html: bool = False):
     # https://github.com/robotframework/robotframework/issues/1505
     if callable(msg):
         msg = str(msg)
+    if len(msg) == 0:
+        return
     if level.upper() not in ('TRACE', 'DEBUG', 'INFO', 'HTML', 'WARN', 'ERROR'):
         if level.upper() == 'CONSOLE':
             level = 'INFO'
+
             console(msg)
         else:
             raise RuntimeError("Invalid log level '%s'." % level)
@@ -56,6 +59,8 @@ def debug(msg, html=False):
 def info(msg, html=False, also_console=False):
     write(msg, 'INFO', html)
     if also_console:
+        if (len(msg) == 0):
+            return
         console(msg)
 
 

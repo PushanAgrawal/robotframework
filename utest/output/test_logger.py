@@ -58,6 +58,12 @@ class TestLogger(unittest.TestCase):
         self.logger.write('Hello, world!', 'INFO')
         assert_true(logger.msg.timestamp.year >= 2023)
 
+    def test_write_to_one_logger_empty(self):
+        logger = LoggerMock(('', 'INFO'))
+        self.logger.register_logger(logger)
+        self.logger.write('', 'INFO')
+        assert_true(logger.msg.timestamp.year >= 2023)
+
     def test_write_to_one_logger_with_trace_level(self):
         logger = LoggerMock(('expected message', 'TRACE'))
         self.logger.register_logger(logger)
@@ -74,7 +80,18 @@ class TestLogger(unittest.TestCase):
         assert_true(logger.msg is logger.msg)
 
     def test_write_multiple_messages(self):
-        msgs = [('0', 'ERROR'), ('1', 'WARN'), ('2', 'INFO'), ('3', 'DEBUG'), ('4', 'TRACE')]
+        msgs = [('0', 'ERROR'), ('1', 'WARN'), ('2', 'INFO'),
+                ('3', 'DEBUG'), ('4', 'TRACE')]
+        logger = LoggerMock(*msgs)
+        self.logger.register_logger(logger)
+        for msg, level in msgs:
+            self.logger.write(msg, level)
+            assert_equal(logger.msg.message, msg)
+            assert_equal(logger.msg.level, level)
+
+    def test_write_multiple_empty_messages(self):
+        msgs = [('', 'ERROR'), ('', 'WARN'), ('', 'INFO'),
+                ('', 'DEBUG'), ('', 'TRACE')]
         logger = LoggerMock(*msgs)
         self.logger.register_logger(logger)
         for msg, level in msgs:
@@ -124,8 +141,12 @@ class TestLogger(unittest.TestCase):
             def end_suite(self, suite, result): self.ended_suite = suite
             def start_test(self, test, result): self.started_test = test
             def end_test(self, test, result): self.ended_test = test
-            def start_keyword(self, keyword, result): self.started_keyword = keyword
-            def end_keyword(self, keyword, result): self.ended_keyword = keyword
+
+            def start_keyword(
+                self, keyword, result): self.started_keyword = keyword
+            def end_keyword(
+                self, keyword, result): self.ended_keyword = keyword
+
         class Arg:
             type = None
             tests = ()
@@ -174,7 +195,8 @@ class TestLogger(unittest.TestCase):
         logger = Logger()
         logger.register_console_logger(width=42)
         self._number_of_registered_loggers_should_be(1, logger)
-        assert_equal(logger._console_logger.start_suite.__self__.writer.width, 42)
+        assert_equal(
+            logger._console_logger.start_suite.__self__.writer.width, 42)
 
     def test_unregister_logger(self):
         logger1, logger2, logger3 = LoggerMock(), LoggerMock(), LoggerMock()

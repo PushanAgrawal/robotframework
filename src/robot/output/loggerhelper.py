@@ -23,20 +23,22 @@ from robot.utils import console_encode, safe_str
 
 
 LEVELS = {
-  'NONE'  : 7,
-  'SKIP'  : 6,
-  'FAIL'  : 5,
-  'ERROR' : 4,
-  'WARN'  : 3,
-  'INFO'  : 2,
-  'DEBUG' : 1,
-  'TRACE' : 0,
+    'NONE': 7,
+    'SKIP': 6,
+    'FAIL': 5,
+    'ERROR': 4,
+    'WARN': 3,
+    'INFO': 2,
+    'DEBUG': 1,
+    'TRACE': 0,
 }
 PseudoLevel = Literal['HTML', 'CONSOLE']
 
 
 def write_to_console(msg, newline=True, stream='stdout'):
     msg = str(msg)
+    if len(msg) == 0:
+        return
     if newline:
         msg += '\n'
     stream = sys.__stdout__ if stream.lower() != 'stderr' else sys.__stderr__
